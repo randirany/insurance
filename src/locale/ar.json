@@ -1,0 +1,92 @@
+{
+    "nav": {
+        "fisrtTitle": "لوحة القيادة",
+        "secondTitle": "لوحة القيادة AB ",
+        "Search": "ابحث",
+        "dropdown": {
+            "title": "الاشعارات",
+            "number": "جديد",
+            "showAll": "رؤية جميع الاشعارات"
+        },
+        "profileInf": {
+            "view": "عرض الملف الشخصي",
+            "setting": "إعدادات الحساب",
+            "logout": "تسجيل الخروج"
+        }
+    },
+    "sideBar": {
+        "mainMenu": {
+            "title": "القائمة الرئيسية",
+            "categore": {
+                "dash": "لوحة القيادة",
+                "custom": "العملاء",
+                "insucresComp": {
+                    "titleInsucresComp": "شركات التأمين",
+                    "categore": {
+                        "Mandatory": "التأمين الإلزامي",
+                        "Third": "تأمين الطرف الثالث",
+                        "Full": "التأمين الكامل"
+                    }
+                },
+                "Dealer": "الوكلاء",
+                "payment": "المدفوعات والإيصالات",
+                "report": {
+                    "titleReport": "التقارير",
+                    "categore": {
+                        "insuranceRep": "تقرير التأمين",
+                        "DealersRep": "تقرير الوكلاء"
+                    }
+                },
+                "chec": "الشيكات"
+            }
+        },
+        "support": {
+            "title": "الدعم",
+            "categore": {
+                "msg": "رسائل العملاء",
+                "inbo": "البريد الوارد"
+            }
+        },
+        "settings": {
+            "title": "الإعدادات",
+            "categore": {
+                "chart": {
+                    "title": "الرسوم البيانية",
+                    "categore": {
+                        "basic": "الرسم البياني الأساسي",
+                        "advance": "الرسم البياني المتقدم"
+                    }
+                }
+            },
+            "auth": {
+                "title": "المصادقة",
+                "categore": {
+                    "signIn": "تسجيل الدخول",
+                    "signUp": "تسجيل الخروج",
+                    "Reset": "إعادة تعيين كلمة المرور"
+                }
+            }
+        }
+    },
+    "home": {
+        "totalCu": "إجمالي العملاء",
+        "TotalIncome": "إجمالي الدخل",
+        "TotalExpenses": "إجمالي النفقات",
+        "DueAmount": "المبلغ المستحق",
+        "TotalVisa": "إجمالي مدفوعات التأشيرة",
+        "TotalCash": "إجمالي الدفع النقدي",
+        "TotalBank": "إجمالي التحويلات المصرفية",
+        "TotalProfit": "إجمالي الربح",
+        "chart": {
+            "title": "نظرة عامة على المدفوعات ",
+            "short": "باختصار بواسطة:",
+            "ReceivedAmount": "المبلغ المستلم ",
+            "DueAmount": "المبلغ المستحق "
+        }
+    },
+    "customers":{
+        "firstTitle":"الرئيسية",
+        "secondeTitle":"الزبائن",
+        "buttonAdd":"اضافة زبون جديد"
+    }
+}

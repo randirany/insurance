@@ -1,0 +1,92 @@
+{
+    "nav": {
+        "fisrtTitle": "Dashboard",
+        "secondTitle": "AB Dashboard",
+        "Search": "Search",
+        "dropdown": {
+            "title": "Notifications",
+            "number": "new",
+            "showAll": "See all notifications"
+        },
+        "profileInf": {
+            "view": "View profile",
+            "setting": "Account settings",
+            "logout": "Logout"
+        }
+    },
+    "sideBar": {
+        "mainMenu": {
+            "title": "Main Menu",
+            "categore": {
+                "dash": "Dashboard",
+                "custom": "Customers",
+                "insucresComp": {
+                    "titleInsucresComp": "Insurance Companies",
+                    "categore": {
+                        "Mandatory": "Mandatory Insurance",
+                        "Third": "Third Party Insurance",
+                        "Full": "Full Insurance"
+                    }
+                },
+                "Dealer": "Dealers",
+                "payment": "Payments and Receipts",
+                "report": {
+                    "titleReport": "Reports",
+                    "categore": {
+                        "insuranceRep": "Insurance Report",
+                        "DealersRep": "Dealers Report"
+                    }
+                },
+                "chec": "Checks"
+            }
+        },
+        "support": {
+            "title": "Support",
+            "categore": {
+                "msg": "Customers Messages",
+                "inbo": "Inbox"
+            }
+        },
+        "settings": {
+            "title": "Settings",
+            "categore": {
+                "chart": {
+                    "title": "Charts",
+                    "categore": {
+                        "basic": "Basic Chart",
+                        "advance": "Advanced Chart"
+                    }
+                }
+            },
+            "auth": {
+                "title": "Authentication",
+                "categore": {
+                    "signIn": "Sign In",
+                    "signUp": "Sign Up",
+                    "Reset": "Reset Password"
+                }
+            }
+        }
+    },
+    "home": {
+        "totalCu": "Total Customer",
+        "TotalIncome": "Total Income",
+        "TotalExpenses": "Total Expenses",
+        "DueAmount": "Due Amount",
+        "TotalVisa": "Total Visa Payment",
+        "TotalCash": "Total cash Payment",
+        "TotalBank": "Total Bank Transferes",
+        "TotalProfit": "Total Profit",
+        "chart": {
+            "title": "Payments Overview",
+            "short": "Short by:",
+            "ReceivedAmount": "Received Amount",
+            "DueAmount": "Due Amount"
+        }
+    },
+    "customers":{
+        "firstTitle":"Home",
+        "secondeTitle":"Customers",
+        "buttonAdd":"Add New Customer"
+    }
+}

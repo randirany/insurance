@@ -1,7 +1,6 @@
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export const UserContext = createContext()
@@ -14,9 +13,11 @@ const UserContextProvider = ({ children }) => {
     const [userCount, setUserCount] = useState(0)
     const [insuranceCount, setInsuranceCount] = useState(0)
     const token = localStorage.getItem("token");
+
     useEffect(() => {
         if (token) {
             const decoded = jwtDecode(token);
+            console.log('uswrDate',UserData)
             const currentTime = Date.now() / 1000; // تحويل الوقت إلى ثوانٍ
             if (decoded.exp < currentTime) {
                 logout();
@@ -30,11 +31,12 @@ const UserContextProvider = ({ children }) => {
         }
     }, []);
 
-
-    const logout = (navigate) => {
+    // Fixed logout function that doesn't rely on a parameter
+    const logout = () => {
         localStorage.removeItem('token');
         setLogin(false);
-        navigate('/login');
+        // Instead of using navigate directly, we can use window.location
+        window.location.href = '/login';
     };
 
     useEffect(() => {
@@ -44,8 +46,8 @@ const UserContextProvider = ({ children }) => {
             getUser()
         }
     }, [userCount]);
+    
     const getUser = async () => {
-
         if (localStorage.getItem('token')) {
             try {
                 let token = localStorage.getItem('token');
@@ -109,6 +111,7 @@ const UserContextProvider = ({ children }) => {
             toast.error("فشل في تحميل بيانات المؤمنين")
         }
     }
+    
     const deleteInsurance = async (id) => {
         if (localStorage.getItem('token')) {
             try {
@@ -132,12 +135,12 @@ const UserContextProvider = ({ children }) => {
             }
         }
     }
+    
     useEffect(() => {
         if (token) {
             console.log(insureds)
             getInsurance()
         }
-
     }, [insuranceCount])
 
     return <UserContext.Provider value={{ isLogin, setInsuranceCount, deleteInsurance, setUserCount, insureds, deleteUser, userCount, setLogin, logout, user, UserData, setUserData }}>{children} </UserContext.Provider>;

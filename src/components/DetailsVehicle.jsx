@@ -240,10 +240,10 @@ function DetailsVehicle() {
                                     <p>Total Received Payments </p>
                                 </div>
                                 <div className="bg-secnodColor rounded-[8px] text-center py-[10px]">
-                                    <p>Total Received Payments </p>
+                                    <p>1500 / 3200   </p>
                                 </div>
                                 <div className="bg-secnodColor rounded-[8px] text-center py-[10px]">
-                                    <p>Total Received Payments </p>
+                                    <p>46 %    </p>
                                 </div>
                             </div>
 

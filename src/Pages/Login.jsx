@@ -11,7 +11,7 @@ function Login() {
     const RegisterUser = async () => {
         try {
             console.log(formik.values)
-            const { data } = await axios.post(`https://backendinsurance.onrender.com/api/v1/admin/signin`, formik.values)
+            const { data } = await axios.post(`http://localhost:3002/api/v1/user/signin`, formik.values)
             console.log(data)
             localStorage.setItem('token', data.token)
             const decoded = jwtDecode(data.token);

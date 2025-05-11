@@ -6,6 +6,7 @@ export default {
       screens: {
         '2sm': '750px',
         '2md':'986px',
+        '3sm':'450px',
       },
       colors:{
         graySpan:'#6B7280',

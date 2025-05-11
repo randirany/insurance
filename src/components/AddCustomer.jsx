@@ -1,158 +1,209 @@
-import { useState, useRef } from "react"
+
+import { useState, useRef } from "react";
 import { X } from "lucide-react";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import axios from "axios";
 
 function AddCustomer({ onClose, isOpen }) {
     if (!isOpen) return null;
-    const [files, setFiles] = useState([])
-    const fileInputRef = useRef(null)
-    const dropAreaRef = useRef(null)
-    const { t, i18n: { language } } = useTranslation()
 
-    const [isDragging, setIsDragging] = useState(false)
+    const [files, setFiles] = useState([]);
+    const fileInputRef = useRef(null);
+    const dropAreaRef = useRef(null);
+    const { t } = useTranslation();
+    const [isDragging, setIsDragging] = useState(false);
 
-    const handleDragOver = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setIsDragging(true)
-    }
-    const handleBrowseClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click()
-        }
-    }
+    const [formData, setFormData] = useState({
+        first_name: "",
+        last_name: "",
+        email: "",
+        id_Number: "",
+        phone_number: "",
+        city: "",
+        birth_date: "",
+        agentsName: "",
+        notes: "",
+        image: null,
+        joining_date: ""
+    });
 
-    const handleDragLeave = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setIsDragging(false)
-    }
-
-    const handleDrop = (e) => {
-        e.preventDefault()
-        e.stopPropagation()
-        setIsDragging(false)
-
-        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            const newFiles = Array.from(e.dataTransfer.files)
-            setFiles(newFiles)
-        }
-    }
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
 
     const handleFileInputChange = (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            const newFiles = Array.from(e.target.files)
-            setFiles(newFiles)
+            const newFiles = Array.from(e.target.files);
+            setFiles(newFiles);
+            setFormData((prev) => ({
+                ...prev,
+                image: newFiles[0],
+            }));
         }
-    }
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-            <div className="w-full max-w-[800px] bg-white rounded-lg shadow-lg p-6  ">
+    };
 
-                <div className="flex items-center justify-between pb-1   p-4 rounded-md">
-                    <h2 className="text-2xl font-semibold  rounded-md">
-                        {t("customers.buttonAdd")}
-                    </h2>
+    const handleBrowseClick = () => {
+        if (fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const formDataToSend = new FormData();
+        formDataToSend.append("first_name", formData.first_name);
+        formDataToSend.append("last_name", formData.last_name);
+        formDataToSend.append("email", formData.email);
+        formDataToSend.append("id_Number", Number(formData.id_Number));
+        formDataToSend.append("phone_number", formData.phone_number);
+        formDataToSend.append("city", formData.city);
+        formDataToSend.append("birth_date", formData.birth_date);
+        formDataToSend.append("joining_date", formData.joining_date);
+        formDataToSend.append("agentsName", formData.agentsName);
+        formDataToSend.append("notes", formData.notes);
+
+        if (formData.image) {
+            formDataToSend.append("image", formData.image);
+        }
+        console.log(formData)
+        const token = `islam__${localStorage.getItem("token")}`;
+
+        try {
+            const response = await axios.post(
+                "https://backendinstursed.onrender.com/api/v1/insured/addInsured",
+                // "http://localhost:3002/api/v1/insured/addInsured",
+                formDataToSend,
+                {
+                    headers: {
+                        token,
+                        "Content-Type": "multipart/form-data",
+                    },
+                }
+            );
+
+            console.log("Customer added successfully:", response.data);
+            onClose(false);
+        } catch (error) {
+            console.error("Error adding customer:", error);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            const newFiles = Array.from(e.dataTransfer.files);
+            setFiles(newFiles);
+            setFormData((prev) => ({
+                ...prev,
+                image: newFiles[0],
+            }));
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3">
+            <div className="2md:w-75 w-full max-w-[800px] bg-white rounded-lg shadow-lg p-6">
+                <div className="flex items-center justify-between pb-1 p-2 rounded-md">
+                    <h2 className="text-2xl font-semibold rounded-md">{t("customers.buttonAdd")}</h2>
                     <button onClick={() => onClose(false)} className="p-1 rounded-full hover:bg-gray-100">
                         <X className="w-5 h-5" />
                     </button>
                 </div>
 
-
-                <form className="mt-2 space-y-4 rounded-md border border-gray-300 ">
-                    <div className="flex items-center justify-between pb-2 border-b border-gray-300   ">
-                        <p className="text-[16px] font-semibold  px-4 py-2 rounded-md">
-                            New Customer Form
-                        </p>
+                <form onSubmit={handleSubmit} className="mt-2 space-y-4 rounded-md border border-gray-300">
+                    <div className="flex items-center justify-between pb-2 border-b border-gray-300">
+                        <p className="text-[16px] font-semibold px-4 py-2 rounded-md">New Customer Form</p>
                     </div>
+
                     <div className="grid grid-cols-2 gap-3 px-4">
                         <div>
-                            <label className="block text-sm font-medium">First name  </label>
-                            <input type="text" className="w-full p-2 border rounded-md" placeholder="Enter Vehicle Name" />
+                            <label className="block text-sm font-medium">First name</label>
+                            <input type="text" name="first_name" className="w-full p-1 border rounded-md" value={formData.first_name} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Last name </label>
-                            <input type="text" className="w-full p-2 border rounded-md" placeholder="Enter Vehicle Number" />
+                            <label className="block text-sm font-medium">Last name</label>
+                            <input type="text" name="last_name" className="w-full p-1 border rounded-md" value={formData.last_name} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Email  </label>
-                            <input type="text" className="w-full p-2 border rounded-md" placeholder="Enter Vehicle Model" />
+                            <label className="block text-sm font-medium">Email</label>
+                            <input type="email" name="email" className="w-full p-1 border rounded-md" value={formData.email} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Identity Number  </label>
-                            <input type="text" className="w-full p-2 border rounded-md" placeholder="Enter Chassis Number" />
+                            <label className="block text-sm font-medium">Identity Number</label>
+                            <input type="number" name="id_Number" className="w-full p-1 border rounded-md" value={formData.id_Number} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">Mobile </label>
-                            <input type="text" className="w-full p-2 border rounded-md" placeholder="Enter Vehicle Color" />
+                            <label className="block text-sm font-medium">Mobile</label>
+                            <input type="text" name="phone_number" className="w-full p-1 border rounded-md" value={formData.phone_number} onChange={handleInputChange} />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium">city </label>
-                            <select className="w-full p-2 border rounded-md">
-                                <option>Choose city </option>
-                                <option>Car</option>
-                                <option>Truck</option>
+                            <label className="block text-sm font-medium">City</label>
+                            <select name="city" className="w-full p-1 border rounded-md" value={formData.city} onChange={handleInputChange}>
+                                <option value="">Choose city</option>
+                                <option value="City 1">City 1</option>
+                                <option value="City 2">City 2</option>
                             </select>
                         </div>
-
-
-
                     </div>
-                    <div className='px-4'>
-                        <label className="block text-sm font-medium"> Notes</label>
-                        <textarea type="text" className="w-full p-2 border rounded-md" placeholder="Enter Vehicle Color" rows='2' />
-                    </div>
-                    <div className='px-4'>
-                        <label className="block text-sm font-medium">customer Image (Optional)</label>
 
+                    <div className="grid grid-cols-2 gap-3 px-4">
+                        <div>
+                            <label className="block text-sm font-medium"> Agent's Name</label>
+                            <input type="text" name="agentsName" className="w-full p-1 border rounded-md" value={formData.agentsName} onChange={handleInputChange} />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium">Birth Date</label>
+                            <input type="date" name="birth_date" className="w-full p-1 border rounded-md" value={formData.birth_date} onChange={handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 px-4">
+                        <div >
+                            <label className="block text-sm font-medium">Notes</label>
+                            <textarea name="notes" className="w-full p-1 border rounded-md" value={formData.notes} onChange={handleInputChange} rows="1.5" />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium">joining_date</label>
+                            <input type="date" name="joining_date" className="w-full p-1 border rounded-md" value={formData.joining_date} onChange={handleInputChange} />
+                        </div>
+                    </div>
+                    <div className="px-4">
+                        <label className="block text-sm font-medium">Customer Image (Optional)</label>
                         <div
                             onClick={handleBrowseClick}
                             ref={dropAreaRef}
-                            className={`w-full max-w-[974px] relative flex cursor-pointer h-[100px] flex-col items-center justify-center h-64 border-1 rounded-md bg-[#DEE4EE] ${isDragging ? "border-[#5750F1] bg-[#5750F1]/5" : "border-gray-300"
+                            className={`w-full max-w-[974px] relative flex cursor-pointer h-[63px] flex-col items-center justify-center border-1 rounded-md bg-[#DEE4EE] ${isDragging ? "border-[#5750F1] bg-[#5750F1]/5" : "border-gray-300"
                                 }`}
                             onDragOver={handleDragOver}
                             onDragLeave={handleDragLeave}
                             onDrop={handleDrop}
                         >
                             <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                                <svg width="45" height="45" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g filter="url(#filter0_d_77_976)">
-                                        <rect x="2.62695" y="1.06055" width="60" height="60" rx="30" fill="white" shapeRendering="crispEdges" />
-                                        <g clip-path="url(#clip0_77_976)">
-                                            <path d="M41.377 34.8105C41.002 34.8105 40.6582 35.123 40.6582 35.5293V38.3105C40.6582 38.5918 40.4395 38.8105 40.1582 38.8105H25.0957C24.8145 38.8105 24.5957 38.5918 24.5957 38.3105V35.5293C24.5957 35.123 24.252 34.8105 23.877 34.8105C23.502 34.8105 23.1582 35.123 23.1582 35.5293V38.3105C23.1582 39.373 24.002 40.2168 25.0645 40.2168H40.1582C41.2207 40.2168 42.0645 39.373 42.0645 38.3105V35.5293C42.0957 35.123 41.752 34.8105 41.377 34.8105Z" fill="#111928" />
-                                            <path d="M28.5957 27.5293L31.9395 24.2793V35.0918C31.9395 35.4668 32.252 35.8105 32.6582 35.8105C33.0332 35.8105 33.377 35.498 33.377 35.0918V24.2793L36.7207 27.5293C36.8457 27.6543 37.0332 27.7168 37.2207 27.7168C37.4082 27.7168 37.5957 27.6543 37.7207 27.498C38.002 27.2168 37.9707 26.7793 37.7207 26.498L33.127 22.123C32.8457 21.873 32.4082 21.873 32.1582 22.123L27.5957 26.5293C27.3145 26.8105 27.3145 27.248 27.5957 27.5293C27.877 27.7793 28.3145 27.8105 28.5957 27.5293Z" fill="#111928" />
-                                        </g>
-                                    </g>
-                                    <defs>
-                                        <filter id="filter0_d_77_976" x="0.626953" y="0.0605469" width="64" height="64" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                                            <feFlood floodOpacity="0" result="BackgroundImageFix" />
-                                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                                            <feOffset dy="1" />
-                                            <feGaussianBlur stdDeviation="1" />
-                                            <feComposite in2="hardAlpha" operator="out" />
-                                            <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
-                                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_77_976" />
-                                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_77_976" result="shape" />
-                                        </filter>
-                                        <clipPath id="clip0_77_976">
-                                            <rect width="20" height="20" fill="white" transform="translate(22.627 21.0605)" />
-                                        </clipPath>
-                                    </defs>
-                                </svg>
-
-                                <div>
-                                    <p className="text-md text-gray-600">Drop Files here to upload</p>
-                                    {/* <p className="mt-2 text-xs text-gray-500">or</p> */}
-                                    {/* <button onClick={handleBrowseClick} className="mt-2 text-sm font-medium text-[#5750F1] hover:underline">
-                  Browse files
-                </button> */}
-                                    <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileInputChange} />
-                                </div>
+                                <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileInputChange} />
+                                <span>Click or drag image here</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* زر الإرسال */}
                     <div className="flex justify-end px-4">
                         <button type="submit" className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">
                             Submit
@@ -165,3 +216,4 @@ function AddCustomer({ onClose, isOpen }) {
 }
 
 export default AddCustomer;
+

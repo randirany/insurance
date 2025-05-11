@@ -2,10 +2,12 @@ import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
 import { Formik, Form, Field, useFormik } from "formik"
 import { useState } from "react"
+
 import * as Yup from "yup"
 import { Bounce, toast, ToastContainer } from "react-toastify"
 function AddVehicle() {
     const { id } = useParams() // Get the insured person's ID from URL
+    console.log(id)
     const [loading, setLoading] = useState(false)
     const [imagePreview, setImagePreview] = useState(null)
     const navigate = useNavigate()
@@ -22,7 +24,7 @@ function AddVehicle() {
             price: "",
             image: null,
         },
-        validationSchema,
+      //  validationSchema,
         onSubmit: async (values) => {
             try {
                 setLoading(true)
@@ -90,7 +92,9 @@ function AddVehicle() {
                 })
 
                 setTimeout(() => {
-                    navigate(`/Insurances`)
+               //     navigate(`/Insurances`)
+                                navigate('/profile', { state: { insuredId} });
+
                 }, 2000)
             } catch (error) {
                 console.error("Error adding vehicle:", error)
@@ -138,7 +142,7 @@ function AddVehicle() {
                                 type="number"
                                 id="plateNumber"
                                 name="plateNumber"
-                                className={`w-full p-2 border rounded-md ${formik.touched.plateNumber && formik.errors.plateNumber ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.plateNumber && formik.errors.plateNumber ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -158,7 +162,7 @@ function AddVehicle() {
                                 type="text"
                                 id="model"
                                 name="model"
-                                className={`w-full p-2 border rounded-md ${formik.touched.model && formik.errors.model ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.model && formik.errors.model ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -178,7 +182,7 @@ function AddVehicle() {
                                 type="text"
                                 id="type"
                                 name="type"
-                                className={`w-full p-2 border rounded-md ${formik.touched.type && formik.errors.type ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.type && formik.errors.type ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -198,7 +202,7 @@ function AddVehicle() {
                                 type="text"
                                 id="ownership"
                                 name="ownership"
-                                className={`w-full p-2 border rounded-md ${formik.touched.ownership && formik.errors.ownership ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.ownership && formik.errors.ownership ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -218,7 +222,7 @@ function AddVehicle() {
                                 type="text"
                                 id="modelNumber"
                                 name="modelNumber"
-                                className={`w-full p-2 border rounded-md ${formik.touched.modelNumber && formik.errors.modelNumber ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.modelNumber && formik.errors.modelNumber ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -238,7 +242,7 @@ function AddVehicle() {
                                 type="date"
                                 id="licenseExpiry"
                                 name="licenseExpiry"
-                                className={`w-full p-2 border rounded-md ${formik.touched.licenseExpiry && formik.errors.licenseExpiry ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.licenseExpiry && formik.errors.licenseExpiry ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -258,7 +262,7 @@ function AddVehicle() {
                                 type="date"
                                 id="lastTest"
                                 name="lastTest"
-                                className={`w-full p-2 border rounded-md ${formik.touched.lastTest && formik.errors.lastTest ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.lastTest && formik.errors.lastTest ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -278,7 +282,7 @@ function AddVehicle() {
                                 type="text"
                                 id="color"
                                 name="color"
-                                className={`w-full p-2 border rounded-md ${formik.touched.color && formik.errors.color ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.color && formik.errors.color ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -298,7 +302,7 @@ function AddVehicle() {
                                 type="number"
                                 id="price"
                                 name="price"
-                                className={`w-full p-2 border rounded-md ${formik.touched.price && formik.errors.price ? "border-red-500" : "border-gray-300"
+                                className={`w-full p-1 border rounded-md ${formik.touched.price && formik.errors.price ? "border-red-500" : "border-gray-300"
                                     }`}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -319,7 +323,7 @@ function AddVehicle() {
                                 id="image"
                                 name="image"
                                 accept="image/*"
-                                className="w-full p-2 border border-gray-300 rounded-md"
+                                className="w-full p-1 border border-gray-300 rounded-md"
                                 onChange={handleImageChange}
                             />
                             {imagePreview && (

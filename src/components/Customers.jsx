@@ -1,194 +1,268 @@
+'use client';
 import { DataGrid } from '@mui/x-data-grid';
-import  { useState } from 'react';
-import {  NavLink } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { IconButton, Menu, MenuItem } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import EditIcon from '@mui/icons-material/Edit';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { X } from 'lucide-react';
+import AddCustomer from './AddCustomer'; // تأكد من وجود كومبوننت لإضافة العميل.
+
+import Add_vehicle from './Add_vehicle';
 import { useNavigate } from 'react-router-dom';
 
-import AddCustomer from './AddCustomer';
-// Import MUI components for the action menu
-import IconButton from '@mui/material/IconButton';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import MoreVertIcon from '@mui/icons-material/MoreVert'; // Import the three dots icon
-
-function Customers() {
-    const { t, i18n: { language } } = useTranslation();
-    const [isAddCustomerOpen, setAddCustomerOpen] = useState(false);
+export default function Customers() {
     const navigate = useNavigate();
 
-    // --- State for the Action Menu ---
-    const [anchorEl, setAnchorEl] = useState(null); // Anchor element for the menu
-    const [selectedRowId, setSelectedRowId] = useState(null); // ID of the row whose menu is open
-    const isMenuOpen = Boolean(anchorEl);
+    const [customers, setCustomers] = useState([]);
+    const [anchorEls, setAnchorEls] = useState({});
+    const [formData, setFormData] = useState({});
+    const [showForm, setShowForm] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
+    const [showAddForm, setShowAddForm] = useState(false);
+    const [selectedInsuredId, setSelectedInsuredId] = useState(null); // لتخزين الـ insuredId
 
-    // --- Dummy Data (Keep your actual data fetching logic if you have one) ---
-    const rows = [
-        { id: 1, name: 'Islam Tubasi', Mobile: '0566008007', address: 'Ramallah', Identity: 402696017, join_date: '1/1/2025' },
-        { id: 2, name: 'Islam Tubasi', Mobile: '0566008007', address: 'Ramallah', Identity: 402696017, join_date: '1/1/2025' },
-        { id: 3, name: 'Islam Tubasi', Mobile: '0566008007', address: 'Ramallah', Identity: 402696017, join_date: '1/1/2025' },
-        { id: 4, name: 'Islam Tubasi', Mobile: '0566008007', address: 'Ramallah', Identity: 402696017, join_date: '1/1/2025' },
-    ];
-
-    // --- Menu Handlers ---
-    const handleMenuOpen = (event, id) => {
-        setAnchorEl(event.currentTarget);
-        setSelectedRowId(id);
+    const handleMenuOpen = (event, rowId) => {
+        setAnchorEls((prev) => ({ ...prev, [rowId]: event.currentTarget }));
     };
 
     const handleMenuClose = () => {
-        setAnchorEl(null);
-        setSelectedRowId(null);
+        setAnchorEls({});
     };
 
-    const handleEdit = () => {
-        console.log(`Edit clicked for row id: ${selectedRowId}`);
-        // Add your Edit logic here (e.g., open an edit modal, navigate to edit page)
-        handleMenuClose(); // Close the menu after clicking
+    const fetchCustomers = async () => {
+        try {
+            const token = `islam__${localStorage.getItem("token")}`;
+            const res = await axios.get(`http://localhost:3002/api/v1/insured/allInsured`, {
+                headers: { token }
+            });
+
+            const formattedData = res.data.insuredList.map(item => ({
+                id: item._id,
+                first_name: item.first_name,
+                last_name: item.last_name,
+                id_Number: item.id_Number,
+                phone_number: item.phone_number,
+                joining_date: item.joining_date ? item.joining_date.slice(0, 10) : '',
+                notes: item.notes,
+                city: item.city,
+                birth_date: item.birth_date ? item.birth_date.slice(0, 10) : '',
+                name: `${item.first_name} ${item.last_name}`,
+                Mobile: item.phone_number,
+                address: item.city,
+                Identity: item.id_Number,
+                email: item.email,
+                agent: item.agentsName,
+            }));
+
+            setCustomers(formattedData);
+        } catch (err) {
+            console.error('Error fetching customers:', err);
+        }
     };
 
-    const handleDelete = () => {
-        console.log(`Delete clicked for row id: ${selectedRowId}`);
-        // Add your Delete logic here (e.g., show confirmation, call API to delete)
-        // You might need to update the 'rows' state after deletion
-        handleMenuClose(); // Close the menu after clicking
+    const handleEdit = (customer) => {
+        setSelectedCustomer(customer.id);
+        setFormData({
+            first_name: customer.first_name,
+            last_name: customer.last_name,
+            id_Number: customer.id_Number,
+            phone_number: customer.phone_number,
+            joining_date: customer.joining_date,
+            notes: customer.notes,
+            city: customer.city,
+            birth_date: customer.birth_date,
+        });
+        setShowForm(true);
     };
 
-    // --- Columns Definition ---
+    const handleDelete = async (id) => {
+        const token = `islam__${localStorage.getItem("token")}`;
+        try {
+            await axios.delete(`http://localhost:3002/api/v1/insured/deleteInsured/${id}`, {
+                headers: { token }
+            });
+            fetchCustomers();
+            handleMenuClose();
+        } catch (err) {
+            console.error("Error deleting customer:", err);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const token = `islam__${localStorage.getItem("token")}`;
+
+        try {
+            await axios.patch(`http://localhost:3002/api/v1/insured/updateInsured/${selectedCustomer}`, formData, {
+                headers: { token }
+            });
+
+            fetchCustomers();
+            setShowForm(false);
+            setFormData({});
+            setSelectedCustomer(null);
+        } catch (err) {
+            console.error('Error updating customer:', err);
+        }
+    };
+
+    useEffect(() => {
+        fetchCustomers();
+    }, []);
+
     const columns = [
-        { field: 'name', headerName: t('customers.columns.name', 'NAME'), flex: 1 }, // Example using t() for headers
-        { field: 'Mobile', headerName: t('customers.columns.mobile', 'MOBILE'), flex: 1 },
-        { field: 'address', headerName: t('customers.columns.address', 'ADDRESS'), flex: 1 },
-        { field: 'Identity', headerName: t('customers.columns.identity', 'IDENTITY'), flex: 1, sortable: false }, // Identity might not be sortable
-        { field: 'join_date', headerName: t('customers.columns.joinDate', 'JOIN DATE'), flex: 1 },
+        { field: 'name', headerName: 'Name', flex: 1 },
+        { field: 'Mobile', headerName: 'Mobile', flex: 1 },
+        { field: 'address', headerName: 'Address', flex: 1 },
+        { field: 'Identity', headerName: 'Identity', flex: 1 },
+        { field: 'email', headerName: 'Email', flex: 1 },
+        { field: 'agent', headerName: 'Agent', flex: 1 },
         {
             field: 'actions',
-            headerName: t('customers.columns.action', 'ACTION'), // Use t() for Action header
-            flex: 0.5, // Adjust flex/width as needed
+            headerName: 'Actions',
+            flex: 0.5,
             sortable: false,
             disableColumnMenu: true,
-            renderCell: (params) => {
-                return (
+            renderCell: (params) => (
+                <>
                     <IconButton
-                        aria-label="actions"
-                        aria-controls={`actions-menu-${params.row.id}`}
-                        aria-haspopup="true"
                         onClick={(event) => handleMenuOpen(event, params.row.id)}
                     >
                         <MoreVertIcon />
                     </IconButton>
-                );
-            },
-        },
+                    <Menu
+                        anchorEl={anchorEls[params.row.id]}
+                        open={Boolean(anchorEls[params.row.id])}
+                        onClose={handleMenuClose}
+                    >
+                        <MenuItem onClick={() => handleEdit(params.row)}>
+                            <EditIcon className="mr-2" /> Edit
+                        </MenuItem>
+                        <MenuItem onClick={() => handleDelete(params.row.id)}>
+                            🗑️ Delete
+                        </MenuItem>
+                       
+       <MenuItem onClick={async () => {
+                        await Add_vehicle(params.row.id);
+                          await  setSelectedInsuredId(params.row.id);
+                           await handleMenuClose();
+                           //await navigate('/profile', { state: { insuredId: params.row.id } });
+                        }}>
+                            🚗 Add Vehicle
+                        </MenuItem>
+                    </Menu>
+                </>
+            ),
+        }
     ];
-
     return (
-        <div className='navblayout'>
-            {/* --- Top Bar --- */}
-            <div className='bg-white flex p-[22px] rounded-md justify-between items-center'>
-                <div className='flex gap-[14px] items-center'> {/* Added items-center */}
-                    <NavLink to="/home" className="text-gray-600 hover:text-blue-600"> {/* Added styling */}
-                        {t("customers.firstTitle")}
-                    </NavLink>
-                    <svg width="16" height="16" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg"> {/* Adjusted size */}
-                        <path fillRule="evenodd" clipRule="evenodd" d="M11.9392 4.55806C12.1833 4.31398 12.579 4.31398 12.8231 4.55806L17.8231 9.55806C18.0672 9.80214 18.0672 10.1979 17.8231 10.4419L12.8231 15.4419C12.579 15.686 12.1833 15.686 11.9392 15.4419C11.6952 15.1979 11.6952 14.8021 11.9392 14.5581L15.8723 10.625H4.04785C3.70267 10.625 3.42285 10.3452 3.42285 10C3.42285 9.65482 3.70267 9.375 4.04785 9.375H15.8723L11.9392 5.44194C11.6952 5.19786 11.6952 4.80214 11.9392 4.55806Z" fill="#6B7280" />
-                    </svg>
-                    {/* Make the second NavLink look like plain text if it's the current page representation */}
-                    <span className="text-gray-800 font-medium">{t("customers.secondeTitle")}</span>
-                    {/* Or if it's a link to a specific user page:
-                       <NavLink to="/user" className="text-gray-600 hover:text-blue-600">{t("customers.buttonAdd")}</NavLink>
-                    */}
-                </div>
-
+        <div className="p-4" style={{ minHeight: '100vh' }}
+        >
+            {/* Header with Add Customer button */}
+            <div className="flex justify-between items-center mb-4" >
+                <h1 className="text-2xl font-bold">Customers</h1>
                 <button
-                    className='bg-[#5750F1] hover:bg-[#4a44d1] py-[6px] px-[14px] rounded-md text-white text-[13px] font-medium transition duration-150 ease-in-out' // Added hover effect and adjusted padding/font size
-                    onClick={() => setAddCustomerOpen(true)}
+                    onClick={() => setShowAddForm(true)}
+                    className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 "
                 >
-                    {t("customers.buttonAdd")}
+                    Add Customer +
                 </button>
             </div>
 
-            {/* --- DataGrid Section --- */}
-            <div className='w-full my-10 bg-white py-4 shadow-md rounded-lg'> {/* Added shadow and rounded */}
-                {/* --- Search Bar --- */}
-                <div className="px-4 pb-4"> {/* Added padding */}
-                   <form className="sticky top-0 z-10 bg-white dark:bg-gray-dark "> {/* Adjusted z-index */}
-                       <div className="relative">
-                           <input
-                               className="w-full max-w-xs rounded-[7px] bg-[#F3F4F6] border border-gray-300 py-2.5 pl-10 pr-4 text-sm text-gray-700 outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 dark:border-dark-3 dark:bg-dark-2 dark:text-white dark:focus:border-primary" // Adjusted styling
-                               placeholder={t('customers.searchPlaceholder', 'Search...')} // Use t() for placeholder
-                               type="text"
-                           />
-                           {/* Search Icon inside input */}
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2">
-                               <svg className="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                   <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                               </svg>
-                            </span>
-                           {/* Removed the button as icon is inside */}
-                       </div>
-                   </form>
+            {/* DataGrid */}
+            <DataGrid
+                rows={customers}
+                columns={columns}
+                autoHeight
+                pageSize={10}
+                rowsPerPageOptions={[10, 20, 50]}
+                disableSelectionOnClick
+                getRowId={(row) => row.id}
+
+            />
+
+            {/* Edit Customer Form */}
+            {showForm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="2md:w-75 w-full max-w-[800px] bg-white rounded-lg shadow-lg p-6">
+                        <div className="flex items-center justify-between pb-1 p-2 rounded-md">
+                            <h2 className="text-2xl font-semibold rounded-md">Edit Customer</h2>
+                            <button onClick={() => setShowForm(false)} className="p-1 rounded-full hover:bg-gray-100">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleSubmit} className="mt-2 space-y-4 border border-gray-300 rounded-md">
+                            <div className="grid grid-cols-2 gap-3 px-4 py-4">
+                                <div>
+                                    <label className="block text-sm font-medium">First Name</label>
+                                    <input type="text" name="first_name" className="w-full p-2 border rounded-md" value={formData.first_name} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">Last Name</label>
+                                    <input type="text" name="last_name" className="w-full p-2 border rounded-md" value={formData.last_name} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">ID Number</label>
+                                    <input type="text" name="id_Number" className="w-full p-2 border rounded-md" value={formData.id_Number} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">Phone Number</label>
+                                    <input type="text" name="phone_number" className="w-full p-2 border rounded-md" value={formData.phone_number} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">Joining Date</label>
+                                    <input type="date" name="joining_date" className="w-full p-2 border rounded-md" value={formData.joining_date} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">Birth Date</label>
+                                    <input type="date" name="birth_date" className="w-full p-2 border rounded-md" value={formData.birth_date} onChange={handleInputChange} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium">City</label>
+                                    <input type="text" name="city" className="w-full p-2 border rounded-md" value={formData.city} onChange={handleInputChange} />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium">Notes</label>
+                                    <textarea name="notes" rows="2" className="w-full p-2 border rounded-md" value={formData.notes} onChange={handleInputChange} />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end px-4 pb-4">
+                                <button type="submit" className="px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500">
+                                    Save Changes
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
+            )}
 
-                {/* --- DataGrid Component --- */}
-                <div style={{ height: 400, width: '100%' }}> {/* Ensure DataGrid has height */}
-                    <DataGrid
-                        className='px-2 text-[#6B7280] text-[14px] border-0' // Removed default border
-                        rows={rows}
-                        columns={columns}
-                        pageSize={5} // Example page size
-                        rowsPerPageOptions={[5, 10, 20]} // Example options
-                        disableSelectionOnClick // Often desired with action menus
-                        disableDensitySelector
-                        disableColumnSelector
-                        // Add other props like loading, error handling etc.
-                        sx={{ // Optional: Further styling via sx prop
-                            '& .MuiDataGrid-columnHeaders': {
-                                backgroundColor: '#F9FAFB', // Light gray header
-                                borderBottom: '1px solid #E5E7EB',
-                            },
-                            '& .MuiDataGrid-cell': {
-                                borderBottom: '1px solid #E5E7EB', // Cell borders
-                            },
-                            '& .MuiDataGrid-footerContainer': {
-                                borderTop: '1px solid #E5E7EB',
-                            },
-                            '& .MuiDataGrid-root': { // Remove outer border
-                                border: 'none',
-                            }
-                        }}
-                    />
-                </div>
-            </div>
+            {/* Add Customer Form (if open) */}
+            {showAddForm && (
+                <AddCustomer
+                    isOpen={showAddForm}
+                    onClose={(closed) => {
+                        setShowAddForm(closed);
+                        fetchCustomers();
+                    }}
+                />
+            )}
 
-            {/* --- Action Menu Component --- */}
-            <Menu
-                id="actions-menu"
-                anchorEl={anchorEl}
-                open={isMenuOpen}
-                onClose={handleMenuClose}
-                MenuListProps={{
-                    'aria-labelledby': 'actions-button', // More generic ID if needed
-                }}
-                // Optional: style the menu paper
-                PaperProps={{
-                    style: {
-                       boxShadow: '0px 2px 8px rgba(0,0,0,0.15)', // Softer shadow
-                    background:"#EFEFEF"},
-                }}
-            >
-                <MenuItem onClick={handleEdit}>
-                    {t('customers.actions.edit', 'Edit')} {/* Use t() */}
-                </MenuItem>
-                <MenuItem onClick={handleDelete} sx={{ color: '#5750F1' }}> {/* Optional: style delete */}
-                    {t('customers.actions.delete', 'Delete')} {/* Use t() */}
-                </MenuItem>
-            </Menu>
-
-            {/* --- Add Customer Modal --- */}
-            <AddCustomer isOpen={isAddCustomerOpen} onClose={() => setAddCustomerOpen(false)} />
-
+            {/* Add Vehicle Form (if open) */}
+            {selectedInsuredId && (
+                
+                <Add_vehicle
+                    isOpen={true}
+                    insuredId={selectedInsuredId}
+                    onClose={() => setSelectedInsuredId(null)}
+                />
+            )}
         </div>
     );
 }
-
-export default Customers;

@@ -65,7 +65,9 @@ body::-webkit-scrollbar {
   height: 100%;
   overflow: hidden !important;
 }
-
+.dropdown-toggle::after{
+  display: none!important;
+}
 .swiper-slide {
   display: flex;
   justify-content: center;
@@ -76,6 +78,9 @@ body::-webkit-scrollbar {
 .swiper-button-next,
 .swiper-button-prev {
   display: none !important;
+}
+.tox-statusbar{
+  display: none!important;
 }
 
 /* Custom navigation buttons */
@@ -107,5 +112,13 @@ body::-webkit-scrollbar {
   .secondcomponent {
     /* padding-left: 70px; */
 
+  }
+}
+@media (max-width: 986px){
+  .paddingCompEn{
+    padding: 0;
+  }
+  .paddingCompAr{
+    padding-right: 0;
   }
 }
